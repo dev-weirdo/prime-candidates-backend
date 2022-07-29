@@ -12,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 //DB connection
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.zmzfmtn.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -29,6 +30,11 @@ const run = async () => {
             const cursor = jobsCollection.find(query);
             const jobs = await cursor.toArray();
             res.send(jobs);
+        })
+        app.post('/jobs', async (req, res) => {
+            const job = req.body;
+            const result = await jobsCollection.insertOne(job);
+            res.send(result);
         })
     }
     finally {
