@@ -37,18 +37,18 @@ const run = async () => {
       const jobs = await cursor.toArray();
       res.send(jobs);
     });
-    app.post("/support", async (req, res) => {
-      const reason = req.body;
-      const result = await supportCollection.insertOne(reason);
-      res.send(result);
-    });
+    // app.post("/support", async (req, res) => {
+    //   const reason = req.body;
+    //   const result = await supportCollection.insertOne(reason);
+    //   res.send(result);
+    // });
 
-    app.get("/support", async (req, res) => {
-      const query = {};
-      const cursor = supportCollection.find(query);
-      const support = await cursor.toArray();
-      res.send(support);
-    });
+    // app.get("/support", async (req, res) => {
+    //   const query = {};
+    //   const cursor = supportCollection.find(query);
+    //   const support = await cursor.toArray();
+    //   res.send(support);
+    // });
     app.post("/jobs", async (req, res) => {
       const job = req.body;
       const result = await jobsCollection.insertOne(job);
