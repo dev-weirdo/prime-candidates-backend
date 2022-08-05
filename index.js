@@ -4,7 +4,7 @@ const app = express();
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 
 //Middlewares
@@ -37,6 +37,14 @@ const run = async () => {
       const jobs = await cursor.toArray();
       res.send(jobs);
     });
+
+    app.get("/jobdetails/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {_id:ObjectId(id)};
+      const job = await jobsCollection.findOne(query);
+      res.send(job);
+    });
+
     app.post("/support", async (req, res) => {
       const reason = req.body;
       const result = await supportCollection.insertOne(reason);
