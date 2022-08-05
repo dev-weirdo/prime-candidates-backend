@@ -38,13 +38,6 @@ const run = async () => {
       res.send(jobs);
     });
 
-    // app.post("/support", async (req, res) => {
-    //   const reason = req.body;
-    //   const result = await supportCollection.insertOne(reason);
-    //   res.send(result);
-    // });
-
-
     app.get("/jobdetails/:id", async (req, res) => {
       const id = req.params.id;
       const query = {_id:ObjectId(id)};
@@ -52,12 +45,11 @@ const run = async () => {
       res.send(job);
     });
 
-    app.post("/support", async (req, res) => {
-      const reason = req.body;
-      const result = await supportCollection.insertOne(reason);
-      res.send(result);
-    });
-
+    // app.post("/support", async (req, res) => {
+    //   const reason = req.body;
+    //   const result = await supportCollection.insertOne(reason);
+    //   res.send(result);
+    // });
 
     // app.get("/support", async (req, res) => {
     //   const query = {};
