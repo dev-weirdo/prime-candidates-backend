@@ -26,6 +26,9 @@ const run = async () => {
 
     //Collections
     const jobsCollection = client.db("PrimeCandidates").collection("jobs");
+    const coursesCollection = client
+      .db("PrimeCandidates")
+      .collection("courses");
     const supportCollection = client
       .db("PrimeCandidates")
       .collection("support");
@@ -36,6 +39,20 @@ const run = async () => {
       const cursor = jobsCollection.find(query);
       const jobs = await cursor.toArray();
       res.send(jobs);
+    });
+    //All API's goes here
+    app.get("/courses", async (req, res) => {
+      const query = {};
+      const cursor = coursesCollection.find(query);
+      const courses = await cursor.toArray();
+      res.send(courses);
+    });
+    // LOAD SINGLE DATA
+    app.get("/courses/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const course = await coursesCollection.findOne(query);
+      res.send(course);
     });
     app.post("/support", async (req, res) => {
       const reason = req.body;
