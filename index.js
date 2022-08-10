@@ -4,7 +4,7 @@ const app = express();
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 
 //Middlewares
@@ -40,6 +40,7 @@ const run = async () => {
       const jobs = await cursor.toArray();
       res.send(jobs);
     });
+
     //All API's goes here
     app.get("/courses", async (req, res) => {
       const query = {};
@@ -54,18 +55,27 @@ const run = async () => {
       const course = await coursesCollection.findOne(query);
       res.send(course);
     });
-    app.post("/support", async (req, res) => {
-      const reason = req.body;
-      const result = await supportCollection.insertOne(reason);
-      res.send(result);
+   
+
+    app.get("/jobdetails/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {_id:ObjectId(id)};
+      const job = await jobsCollection.findOne(query);
+      res.send(job);
     });
 
-    app.get("/support", async (req, res) => {
-      const query = {};
-      const cursor = supportCollection.find(query);
-      const support = await cursor.toArray();
-      res.send(support);
-    });
+    // app.post("/support", async (req, res) => {
+    //   const reason = req.body;
+    //   const result = await supportCollection.insertOne(reason);
+    //   res.send(result);
+    // });
+
+    // app.get("/support", async (req, res) => {
+    //   const query = {};
+    //   const cursor = supportCollection.find(query);
+    //   const support = await cursor.toArray();
+    //   res.send(support);
+    // });
     app.post("/jobs", async (req, res) => {
       const job = req.body;
       const result = await jobsCollection.insertOne(job);
