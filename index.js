@@ -29,7 +29,7 @@ const run = async () => {
     const supportCollection = client
       .db("PrimeCandidates")
       .collection("support");
-
+  
     //All API's goes here
     app.get("/jobs", async (req, res) => {
       const query = {};
