@@ -26,6 +26,7 @@ const run = async () => {
 
     //Collections
     const jobsCollection = client.db("PrimeCandidates").collection("jobs");
+    const userProfileCollection = client.db("PrimeCandidates").collection("profile");
     const coursesCollection = client
       .db("PrimeCandidates")
       .collection("courses");
@@ -55,11 +56,11 @@ const run = async () => {
       const course = await coursesCollection.findOne(query);
       res.send(course);
     });
-   
+
 
     app.get("/jobdetails/:id", async (req, res) => {
       const id = req.params.id;
-      const query = {_id:ObjectId(id)};
+      const query = { _id: ObjectId(id) };
       const job = await jobsCollection.findOne(query);
       res.send(job);
     });
@@ -81,6 +82,27 @@ const run = async () => {
       const result = await jobsCollection.insertOne(job);
       res.send(result);
     });
+
+    app.put('/userprofile', async (req, res) => {
+      const user = req.body;
+      console.log(user)
+      const filter = { email: user.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await userProfileCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
+    });
+
+    app.get('/userprofile', async (req, res) => {
+      const email = req.query.email;
+      console.log(email)
+      const query = { email: email };
+      const result = await userProfileCollection.find(query).toArray();
+      res.send(result);
+    });
+
   } finally {
   }
 };
