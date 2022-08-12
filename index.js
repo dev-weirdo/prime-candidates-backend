@@ -34,6 +34,8 @@ const run = async () => {
     const coursesCollection = client
       .db("PrimeCandidates")
       .collection("courses");
+
+
     // const supportCollection = client
     //   .db("PrimeCandidates")
     //   .collection("support");
@@ -45,6 +47,7 @@ const run = async () => {
     // const userProfileCollection = client.db("PrimeCandidates").collection("profile");
     // const coursesCollection = client.db("PrimeCandidates").collection("courses");
     // const supportCollection = client.db("PrimeCandidates").collection("support");
+
 
 
     //All API's goes here
@@ -97,7 +100,7 @@ const run = async () => {
 
     app.put("/userprofile", async (req, res) => {
       const user = req.body;
-      console.log(user);
+
       const filter = { email: user.email };
       const options = { upsert: true };
       const updateDoc = {
@@ -113,7 +116,7 @@ const run = async () => {
 
     app.get("/userprofile", async (req, res) => {
       const email = req.query.email;
-      console.log(email);
+
       const query = { email: email };
       const result = await userProfileCollection.find(query).toArray();
       res.send(result);
