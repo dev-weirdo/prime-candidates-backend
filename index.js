@@ -26,17 +26,9 @@ const run = async () => {
 
     //Collections
     const jobsCollection = client.db("PrimeCandidates").collection("jobs");
-<<<<<<< HEAD
     const userProfileCollection = client.db("PrimeCandidates").collection("profile");
-    const coursesCollection = client
-      .db("PrimeCandidates")
-      .collection("courses");
-    const supportCollection = client
-      .db("PrimeCandidates")
-      .collection("support");
-=======
-    const supportCollection = client.db("PrimeCandidates").collection("support");
->>>>>>> e617fec03b69e4e96508df7e69b30f2695647851
+    const coursesCollection = client.db("PrimeCandidates").collection("courses");
+    // const supportCollection = client.db("PrimeCandidates").collection("support");
 
     //All API's goes here
     app.get("/jobs", async (req, res) => {
