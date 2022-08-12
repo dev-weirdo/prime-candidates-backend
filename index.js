@@ -27,6 +27,7 @@ const run = async () => {
     //Collections
     const jobsCollection = client.db("PrimeCandidates").collection("jobs");
 
+
     const userProfileCollection = client
       .db("PrimeCandidates")
       .collection("profile");
@@ -40,6 +41,11 @@ const run = async () => {
     // const supportCollection = client
     //   .db("PrimeCandidates")
     //   .collection("support");
+
+    // const userProfileCollection = client.db("PrimeCandidates").collection("profile");
+    // const coursesCollection = client.db("PrimeCandidates").collection("courses");
+    // const supportCollection = client.db("PrimeCandidates").collection("support");
+
 
     //All API's goes here
     app.get("/jobs", async (req, res) => {
