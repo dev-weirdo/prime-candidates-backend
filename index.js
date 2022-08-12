@@ -49,17 +49,16 @@ const run = async () => {
       res.send(courses);
     });
     // LOAD SINGLE DATA
-    app.get("/courses/:id", async (req, res) => {
+    app.get("/courseDetails/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const course = await coursesCollection.findOne(query);
       res.send(course);
     });
-   
 
     app.get("/jobdetails/:id", async (req, res) => {
       const id = req.params.id;
-      const query = {_id:ObjectId(id)};
+      const query = { _id: ObjectId(id) };
       const job = await jobsCollection.findOne(query);
       res.send(job);
     });
