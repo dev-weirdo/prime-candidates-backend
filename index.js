@@ -26,14 +26,30 @@ const run = async () => {
 
     //Collections
     const jobsCollection = client.db("PrimeCandidates").collection("jobs");
-    const userProfileCollection = client.db("PrimeCandidates").collection("profile");
+
+
+    const userProfileCollection = client
+      .db("PrimeCandidates")
+      .collection("profile");
     const coursesCollection = client
       .db("PrimeCandidates")
       .collection("courses");
-    const supportCollection = client
-      .db("PrimeCandidates")
-      .collection("support");
-  
+
+
+    // const supportCollection = client
+    //   .db("PrimeCandidates")
+    //   .collection("support");
+
+    // const supportCollection = client
+    //   .db("PrimeCandidates")
+    //   .collection("support");
+
+    // const userProfileCollection = client.db("PrimeCandidates").collection("profile");
+    // const coursesCollection = client.db("PrimeCandidates").collection("courses");
+    // const supportCollection = client.db("PrimeCandidates").collection("support");
+
+
+
     //All API's goes here
     app.get("/jobs", async (req, res) => {
       const query = {};
@@ -56,7 +72,6 @@ const run = async () => {
       const course = await coursesCollection.findOne(query);
       res.send(course);
     });
-
 
     app.get("/jobdetails/:id", async (req, res) => {
       const id = req.params.id;
@@ -83,26 +98,29 @@ const run = async () => {
       res.send(result);
     });
 
-    app.put('/userprofile', async (req, res) => {
+    app.put("/userprofile", async (req, res) => {
       const user = req.body;
-      
+
       const filter = { email: user.email };
       const options = { upsert: true };
       const updateDoc = {
         $set: user,
       };
-      const result = await userProfileCollection.updateOne(filter, updateDoc, options);
+      const result = await userProfileCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
       res.send(result);
     });
 
-    app.get('/userprofile', async (req, res) => {
+    app.get("/userprofile", async (req, res) => {
       const email = req.query.email;
-     
+
       const query = { email: email };
       const result = await userProfileCollection.find(query).toArray();
       res.send(result);
     });
-
   } finally {
   }
 };
