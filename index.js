@@ -34,6 +34,9 @@ const run = async () => {
     const coursesCollection = client
       .db("PrimeCandidates")
       .collection("courses");
+    const premiumsCollection = client
+      .db("PrimeCandidates")
+      .collection("premiums");
 
 
     // const supportCollection = client
@@ -79,6 +82,14 @@ const run = async () => {
       const job = await jobsCollection.findOne(query);
       res.send(job);
     });
+    
+
+    app.get("/premiums", async (req, res) => {
+      const query = {};
+      const cursor = premiumsCollection.find(query);
+      const premiums = await cursor.toArray();
+      res.send(premiums);
+    })
 
     // app.post("/support", async (req, res) => {
     //   const reason = req.body;
