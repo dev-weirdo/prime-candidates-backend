@@ -30,9 +30,9 @@ const run = async () => {
     const coursesCollection = client
       .db("PrimeCandidates")
       .collection("courses");
-    const supportCollection = client
-      .db("PrimeCandidates")
-      .collection("support");
+    // const supportCollection = client
+    //   .db("PrimeCandidates")
+    //   .collection("support");
   
     //All API's goes here
     app.get("/jobs", async (req, res) => {
