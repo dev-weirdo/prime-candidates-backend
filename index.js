@@ -4,6 +4,8 @@ const app = express();
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 require("dotenv").config();
+
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 
@@ -26,12 +28,23 @@ const run = async () => {
 
     //Collections
     const jobsCollection = client.db("PrimeCandidates").collection("jobs");
+
+
+
+    const userProfileCollection = client
+      .db("PrimeCandidates")
+      .collection("profile");
+
     const coursesCollection = client
       .db("PrimeCandidates")
       .collection("courses");
-    const supportCollection = client
+    const premiumsCollection = client
       .db("PrimeCandidates")
-      .collection("support");
+      .collection("premiums");
+    
+      const paymentCollection = client
+      .db("PrimeCandidates").collection("payments");
+    
     const userCollection = client.db("PrimeCandidates").collection("user");
     const applyCollection = client.db("PrimeCandidates").collection("apply");
 
@@ -47,6 +60,24 @@ const run = async () => {
     //   const result = await userCollection.updateOne(filter, updateDoc, options);
     //   res.send(result);
     // });
+
+      
+
+
+    // const supportCollection = client
+    //   .db("PrimeCandidates")
+    //   .collection("support");
+
+    // const supportCollection = client
+    //   .db("PrimeCandidates")
+    //   .collection("support");
+
+    // const userProfileCollection = client.db("PrimeCandidates").collection("profile");
+    // const coursesCollection = client.db("PrimeCandidates").collection("courses");
+    // const supportCollection = client.db("PrimeCandidates").collection("support");
+
+
+
 
     //All API's goes here
     app.get("/jobs", async (req, res) => {
@@ -77,6 +108,33 @@ const run = async () => {
       const job = await jobsCollection.findOne(query);
       res.send(job);
     });
+    
+
+    app.get("/premiums", async (req, res) => {
+      const query = {};
+      const cursor = premiumsCollection.find(query);
+      const premiums = await cursor.toArray();
+      res.send(premiums);
+    });
+    // app.get("/premiums/:id", async (req, res) => {
+    //   const query = req.query;
+    //   const { productId } = query;
+    //   const query = { _id: ObjectId(id) };
+    //   console.log(query)
+    //   const premium = await premiumsCollection.findOne(query);
+    //   res.send(premium);
+    // });
+    // app.post("/create-payment-intent",async (req, res) => {
+    //   const service = req.body;
+    //   const price = service.price;
+    //   const amount = price * 100;
+    //   const paymentIntent = await stripe.paymentIntents.create({
+    //     amount: amount,
+    //     currency: "usd",
+    //     payment_method_types: ["card"],
+    //   });
+    //   res.send({ clientSecret: paymentIntent.client_secret });
+    // });
 
     // app.post("/support", async (req, res) => {
     //   const reason = req.body;
@@ -95,11 +153,38 @@ const run = async () => {
       const result = await jobsCollection.insertOne(job);
       res.send(result);
     });
+
     app.post("/apply", async (req, res) => {
       const apply = req.body;
       const result = await applyCollection.insertOne(apply);
       res.send(result);
     });
+
+
+    app.put("/userprofile", async (req, res) => {
+      const user = req.body;
+
+      const filter = { email: user.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await userProfileCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+
+    app.get("/userprofile", async (req, res) => {
+      const email = req.query.email;
+
+      const query = { email: email };
+      const result = await userProfileCollection.find(query).toArray();
+      res.send(result);
+    });
+
   } finally {
   }
 };
