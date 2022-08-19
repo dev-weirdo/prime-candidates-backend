@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 require("dotenv").config();
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 
@@ -29,7 +29,6 @@ const run = async () => {
     //Collections
     const jobsCollection = client.db("PrimeCandidates").collection("jobs");
 
-
     const userProfileCollection = client
       .db("PrimeCandidates")
       .collection("profile");
@@ -39,11 +38,14 @@ const run = async () => {
     const premiumsCollection = client
       .db("PrimeCandidates")
       .collection("premiums");
-    
-      const paymentCollection = client
+    const usersCollection = client.db("PrimeCandidates").collection("users");
+
+    const paymentCollection = client
       .db("PrimeCandidates")
       .collection("payments");
-
+    const usersDataCollection = client
+      .db("PrimeCandidates")
+      .collection("usersData");
 
     // const supportCollection = client
     //   .db("PrimeCandidates")
@@ -56,8 +58,6 @@ const run = async () => {
     // const userProfileCollection = client.db("PrimeCandidates").collection("profile");
     // const coursesCollection = client.db("PrimeCandidates").collection("courses");
     // const supportCollection = client.db("PrimeCandidates").collection("support");
-
-
 
     //All API's goes here
     app.get("/jobs", async (req, res) => {
@@ -88,7 +88,6 @@ const run = async () => {
       const job = await jobsCollection.findOne(query);
       res.send(job);
     });
-    
 
     app.get("/premiums", async (req, res) => {
       const query = {};
@@ -96,6 +95,20 @@ const run = async () => {
       const premiums = await cursor.toArray();
       res.send(premiums);
     });
+
+    app.post("/userprofile", async (req, res) => {
+      const user = req.body;
+      const result = await  userProfileCollection.insertOne(user);
+      res.send(result);
+    });
+    app.get("/users", async (req, res) => {
+      const query = {};
+      const cursor = usersCollection.find(query);
+      const users = await cursor.toArray();
+      res.send(users);
+    })
+   
+
     // app.get("/premiums/:id", async (req, res) => {
     //   const query = req.query;
     //   const { productId } = query;
@@ -104,17 +117,17 @@ const run = async () => {
     //   const premium = await premiumsCollection.findOne(query);
     //   res.send(premium);
     // });
-    // app.post("/create-payment-intent",async (req, res) => {
-    //   const service = req.body;
-    //   const price = service.price;
-    //   const amount = price * 100;
-    //   const paymentIntent = await stripe.paymentIntents.create({
-    //     amount: amount,
-    //     currency: "usd",
-    //     payment_method_types: ["card"],
-    //   });
-    //   res.send({ clientSecret: paymentIntent.client_secret });
-    // });
+    app.post("/create-payment-intent",async (req, res) => {
+      const service = req.body;
+      const price = service.value;
+      const amount = price * 100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+      res.send({ clientSecret: paymentIntent.client_secret });
+    });
 
     // app.post("/support", async (req, res) => {
     //   const reason = req.body;
