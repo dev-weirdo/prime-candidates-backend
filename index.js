@@ -29,9 +29,12 @@ const run = async () => {
     //Collections
     const jobsCollection = client.db("PrimeCandidates").collection("jobs");
 
+
+
     const userProfileCollection = client
       .db("PrimeCandidates")
       .collection("profile");
+
     const coursesCollection = client
       .db("PrimeCandidates")
       .collection("courses");
@@ -46,6 +49,27 @@ const run = async () => {
     const usersDataCollection = client
       .db("PrimeCandidates")
       .collection("usersData");
+    
+      
+    
+    const userCollection = client.db("PrimeCandidates").collection("user");
+    const applyCollection = client.db("PrimeCandidates").collection("apply");
+
+    // //User Api
+    // app.put("/user/:email", async (req, res) => {
+    //   const email = req.params.email;
+    //   const user = req.body;
+    //   const filter = { email: email };
+    //   const options = { upsert: true };
+    //   const updateDoc = {
+    //     $set: user,
+    //   };
+    //   const result = await userCollection.updateOne(filter, updateDoc, options);
+    //   res.send(result);
+    // });
+
+      
+
 
     // const supportCollection = client
     //   .db("PrimeCandidates")
@@ -58,6 +82,9 @@ const run = async () => {
     // const userProfileCollection = client.db("PrimeCandidates").collection("profile");
     // const coursesCollection = client.db("PrimeCandidates").collection("courses");
     // const supportCollection = client.db("PrimeCandidates").collection("support");
+
+
+
 
     //All API's goes here
     app.get("/jobs", async (req, res) => {
@@ -75,7 +102,7 @@ const run = async () => {
       res.send(courses);
     });
     // LOAD SINGLE DATA
-    app.get("/courses/:id", async (req, res) => {
+    app.get("/courseDetails/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const course = await coursesCollection.findOne(query);
@@ -147,6 +174,13 @@ const run = async () => {
       res.send(result);
     });
 
+    app.post("/apply", async (req, res) => {
+      const apply = req.body;
+      const result = await applyCollection.insertOne(apply);
+      res.send(result);
+    });
+
+
     app.put("/userprofile", async (req, res) => {
       const user = req.body;
 
@@ -170,6 +204,7 @@ const run = async () => {
       const result = await userProfileCollection.find(query).toArray();
       res.send(result);
     });
+
   } finally {
   }
 };
