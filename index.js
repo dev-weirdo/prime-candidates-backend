@@ -32,6 +32,21 @@ const run = async () => {
     const supportCollection = client
       .db("PrimeCandidates")
       .collection("support");
+    const userCollection = client.db("PrimeCandidates").collection("user");
+    const applyCollection = client.db("PrimeCandidates").collection("apply");
+
+    // //User Api
+    // app.put("/user/:email", async (req, res) => {
+    //   const email = req.params.email;
+    //   const user = req.body;
+    //   const filter = { email: email };
+    //   const options = { upsert: true };
+    //   const updateDoc = {
+    //     $set: user,
+    //   };
+    //   const result = await userCollection.updateOne(filter, updateDoc, options);
+    //   res.send(result);
+    // });
 
     //All API's goes here
     app.get("/jobs", async (req, res) => {
@@ -78,6 +93,11 @@ const run = async () => {
     app.post("/jobs", async (req, res) => {
       const job = req.body;
       const result = await jobsCollection.insertOne(job);
+      res.send(result);
+    });
+    app.post("/apply", async (req, res) => {
+      const apply = req.body;
+      const result = await applyCollection.insertOne(apply);
       res.send(result);
     });
   } finally {
