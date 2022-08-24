@@ -29,8 +29,6 @@ const run = async () => {
     //Collections
     const jobsCollection = client.db("PrimeCandidates").collection("jobs");
 
-
-
     const userProfileCollection = client
       .db("PrimeCandidates")
       .collection("profile");
@@ -49,9 +47,13 @@ const run = async () => {
     const usersDataCollection = client
       .db("PrimeCandidates")
       .collection("usersData");
-    
-      
-    
+    const reviewsCollection = client
+      .db("PrimeCandidates")
+      .collection("reviews");
+    const experienceCollection = client
+      .db("PrimeCandidates")
+      .collection("experience");
+
     const userCollection = client.db("PrimeCandidates").collection("user");
     const applyCollection = client.db("PrimeCandidates").collection("apply");
 
@@ -68,9 +70,6 @@ const run = async () => {
     //   res.send(result);
     // });
 
-      
-
-
     // const supportCollection = client
     //   .db("PrimeCandidates")
     //   .collection("support");
@@ -83,15 +82,24 @@ const run = async () => {
     // const coursesCollection = client.db("PrimeCandidates").collection("courses");
     // const supportCollection = client.db("PrimeCandidates").collection("support");
 
-
-
-
     //All API's goes here
     app.get("/jobs", async (req, res) => {
       const query = {};
       const cursor = jobsCollection.find(query);
       const jobs = await cursor.toArray();
       res.send(jobs);
+    });
+    app.get("/jobs", async (req, res) => {
+      const query = {};
+      const cursor = jobsCollection.find(query);
+      const jobs = await cursor.toArray();
+      res.send(jobs);
+    });
+    app.delete("/jobs/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await jobsCollection.deleteOne(query);
+      res.send(result);
     });
 
     //All API's goes here
@@ -125,16 +133,15 @@ const run = async () => {
 
     app.post("/userprofile", async (req, res) => {
       const user = req.body;
-      const result = await  userProfileCollection.insertOne(user);
+      const result = await userProfileCollection.insertOne(user);
       res.send(result);
     });
-    app.get("/users", async (req, res) => {
+    app.get("/userProfile", async (req, res) => {
       const query = {};
-      const cursor = usersCollection.find(query);
+      const cursor = userProfileCollection.find(query);
       const users = await cursor.toArray();
       res.send(users);
-    })
-   
+    });
 
     // app.get("/premiums/:id", async (req, res) => {
     //   const query = req.query;
@@ -144,7 +151,7 @@ const run = async () => {
     //   const premium = await premiumsCollection.findOne(query);
     //   res.send(premium);
     // });
-    app.post("/create-payment-intent",async (req, res) => {
+    app.post("/create-payment-intent", async (req, res) => {
       const service = req.body;
       const price = service.value;
       const amount = price * 100;
@@ -179,7 +186,12 @@ const run = async () => {
       const result = await applyCollection.insertOne(apply);
       res.send(result);
     });
-
+    app.get("/apply", async (req, res) => {
+      const query = {};
+      const cursor = applyCollection.find(query);
+      const apply = await cursor.toArray();
+      res.send(apply);
+    });
 
     app.put("/userprofile", async (req, res) => {
       const user = req.body;
@@ -204,7 +216,54 @@ const run = async () => {
       const result = await userProfileCollection.find(query).toArray();
       res.send(result);
     });
+    app.get("/userprofile", async (req, res) => {
+      const email = req.query.email;
 
+      const query = { email: email };
+      const result = await userProfileCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.post("/review", async (req, res) => {
+      const review = req.body;
+      const result = await reviewsCollection.insertOne(review);
+      res.send(result);
+    });
+    app.get("/review", async (req, res) => {
+      const query = {};
+      const cursor = reviewsCollection.find(query);
+      const reviews = await cursor.toArray();
+      res.send(reviews);
+    });
+    app.delete("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await reviewsCollection.deleteOne(query);
+      res.send(result);
+    });
+    app.put("/experience/:email", async (req, res) => {
+      const experience = req.body;
+
+      const filter = { email: experience.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: experience,
+      };
+      const result = await experienceCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+    app.get("/experience/:email", async (req, res) => {
+      const email = req.query.email;
+
+      const query = { email: email };
+      const result = await experienceCollection.find(query).toArray();
+      res.send(result);
+
+    })
   } finally {
   }
 };
