@@ -53,6 +53,18 @@ const run = async () => {
     const experienceCollection = client
       .db("PrimeCandidates")
       .collection("experience");
+    const educationCollection = client
+      .db("PrimeCandidates")
+      .collection("education");
+    const adminCollection = client
+      .db("PrimeCandidates")
+      .collection("admin");
+    const employeeCollection = client
+      .db("PrimeCandidates")
+      .collection("employee");
+    const studentCollection = client
+      .db("PrimeCandidates")
+      .collection("student");
 
     const userCollection = client.db("PrimeCandidates").collection("user");
     const applyCollection = client.db("PrimeCandidates").collection("apply");
@@ -199,8 +211,6 @@ const run = async () => {
       const apply = await cursor.toArray();
       res.send(apply);
     });
-   
-    
 
     app.put("/userprofile", async (req, res) => {
       const user = req.body;
@@ -271,8 +281,42 @@ const run = async () => {
       const query = { email: email };
       const result = await experienceCollection.find(query).toArray();
       res.send(result);
+    });
+    app.put("/education/:email", async (req, res) => {
+      const education = req.body;
 
-    })
+      const filter = { email: education.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: education,
+      };
+      const result = await educationCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+    app.get("/education", async (req, res) => {
+      const email = req.query.email;
+
+      const query = { email: email };
+      const result = await educationCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.get("/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await userProfileCollection.findOne({ email: email });
+      const isAdmin = user?.category === "admin";
+      res.send({ admin: isAdmin });
+    });
+    app.get("/employee/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await userProfileCollection.findOne({ email: email });
+      const isEmployee = user?.category === "employee";
+      res.send({ employee: isEmployee });
+    });
+   
   } finally {
   }
 };
