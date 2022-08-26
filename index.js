@@ -192,6 +192,15 @@ const run = async () => {
       const apply = await cursor.toArray();
       res.send(apply);
     });
+    app.get("/apply/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const cursor = applyCollection.find(query);
+      const apply = await cursor.toArray();
+      res.send(apply);
+    });
+   
+    
 
     app.put("/userprofile", async (req, res) => {
       const user = req.body;
