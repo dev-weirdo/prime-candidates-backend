@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 require("dotenv").config();
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 
@@ -29,21 +29,58 @@ const run = async () => {
     //Collections
     const jobsCollection = client.db("PrimeCandidates").collection("jobs");
 
-
     const userProfileCollection = client
       .db("PrimeCandidates")
       .collection("profile");
+
     const coursesCollection = client
       .db("PrimeCandidates")
       .collection("courses");
     const premiumsCollection = client
       .db("PrimeCandidates")
       .collection("premiums");
-    
-      const paymentCollection = client
+    const usersCollection = client.db("PrimeCandidates").collection("users");
+
+    const paymentCollection = client
       .db("PrimeCandidates")
       .collection("payments");
+    const usersDataCollection = client
+      .db("PrimeCandidates")
+      .collection("usersData");
+    const reviewsCollection = client
+      .db("PrimeCandidates")
+      .collection("reviews");
+    const experienceCollection = client
+      .db("PrimeCandidates")
+      .collection("experience");
+    const educationCollection = client
+      .db("PrimeCandidates")
+      .collection("education");
+    const adminCollection = client
+      .db("PrimeCandidates")
+      .collection("admin");
+    const employeeCollection = client
+      .db("PrimeCandidates")
+      .collection("employee");
+    const studentCollection = client
+      .db("PrimeCandidates")
+      .collection("student");
 
+    const userCollection = client.db("PrimeCandidates").collection("user");
+    const applyCollection = client.db("PrimeCandidates").collection("apply");
+
+    // //User Api
+    // app.put("/user/:email", async (req, res) => {
+    //   const email = req.params.email;
+    //   const user = req.body;
+    //   const filter = { email: email };
+    //   const options = { upsert: true };
+    //   const updateDoc = {
+    //     $set: user,
+    //   };
+    //   const result = await userCollection.updateOne(filter, updateDoc, options);
+    //   res.send(result);
+    // });
 
     // const supportCollection = client
     //   .db("PrimeCandidates")
@@ -57,14 +94,24 @@ const run = async () => {
     // const coursesCollection = client.db("PrimeCandidates").collection("courses");
     // const supportCollection = client.db("PrimeCandidates").collection("support");
 
-
-
     //All API's goes here
     app.get("/jobs", async (req, res) => {
       const query = {};
       const cursor = jobsCollection.find(query);
       const jobs = await cursor.toArray();
       res.send(jobs);
+    });
+    app.get("/jobs", async (req, res) => {
+      const query = {};
+      const cursor = jobsCollection.find(query);
+      const jobs = await cursor.toArray();
+      res.send(jobs);
+    });
+    app.delete("/jobs/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await jobsCollection.deleteOne(query);
+      res.send(result);
     });
 
     //All API's goes here
@@ -75,7 +122,7 @@ const run = async () => {
       res.send(courses);
     });
     // LOAD SINGLE DATA
-    app.get("/courses/:id", async (req, res) => {
+    app.get("/courseDetails/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const course = await coursesCollection.findOne(query);
@@ -88,7 +135,6 @@ const run = async () => {
       const job = await jobsCollection.findOne(query);
       res.send(job);
     });
-    
 
     app.get("/premiums", async (req, res) => {
       const query = {};
@@ -96,6 +142,19 @@ const run = async () => {
       const premiums = await cursor.toArray();
       res.send(premiums);
     });
+
+    app.post("/userprofile", async (req, res) => {
+      const user = req.body;
+      const result = await userProfileCollection.insertOne(user);
+      res.send(result);
+    });
+    app.get("/userProfile", async (req, res) => {
+      const query = {};
+      const cursor = userProfileCollection.find(query);
+      const users = await cursor.toArray();
+      res.send(users);
+    });
+
     // app.get("/premiums/:id", async (req, res) => {
     //   const query = req.query;
     //   const { productId } = query;
@@ -104,17 +163,17 @@ const run = async () => {
     //   const premium = await premiumsCollection.findOne(query);
     //   res.send(premium);
     // });
-    // app.post("/create-payment-intent",async (req, res) => {
-    //   const service = req.body;
-    //   const price = service.price;
-    //   const amount = price * 100;
-    //   const paymentIntent = await stripe.paymentIntents.create({
-    //     amount: amount,
-    //     currency: "usd",
-    //     payment_method_types: ["card"],
-    //   });
-    //   res.send({ clientSecret: paymentIntent.client_secret });
-    // });
+    app.post("/create-payment-intent", async (req, res) => {
+      const service = req.body;
+      const price = service.value;
+      const amount = price * 100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+      res.send({ clientSecret: paymentIntent.client_secret });
+    });
 
     // app.post("/support", async (req, res) => {
     //   const reason = req.body;
@@ -132,6 +191,25 @@ const run = async () => {
       const job = req.body;
       const result = await jobsCollection.insertOne(job);
       res.send(result);
+    });
+
+    app.post("/apply", async (req, res) => {
+      const apply = req.body;
+      const result = await applyCollection.insertOne(apply);
+      res.send(result);
+    });
+    app.get("/apply", async (req, res) => {
+      const query = {};
+      const cursor = applyCollection.find(query);
+      const apply = await cursor.toArray();
+      res.send(apply);
+    });
+    app.get("/apply/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const cursor = applyCollection.find(query);
+      const apply = await cursor.toArray();
+      res.send(apply);
     });
 
     app.put("/userprofile", async (req, res) => {
@@ -157,6 +235,88 @@ const run = async () => {
       const result = await userProfileCollection.find(query).toArray();
       res.send(result);
     });
+    app.get("/userprofile", async (req, res) => {
+      const email = req.query.email;
+
+      const query = { email: email };
+      const result = await userProfileCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.post("/review", async (req, res) => {
+      const review = req.body;
+      const result = await reviewsCollection.insertOne(review);
+      res.send(result);
+    });
+    app.get("/review", async (req, res) => {
+      const query = {};
+      const cursor = reviewsCollection.find(query);
+      const reviews = await cursor.toArray();
+      res.send(reviews);
+    });
+    app.delete("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await reviewsCollection.deleteOne(query);
+      res.send(result);
+    });
+    app.put("/experience/:email", async (req, res) => {
+      const experience = req.body;
+
+      const filter = { email: experience.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: experience,
+      };
+      const result = await experienceCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+    app.get("/experience/:email", async (req, res) => {
+      const email = req.query.email;
+
+      const query = { email: email };
+      const result = await experienceCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.put("/education/:email", async (req, res) => {
+      const education = req.body;
+
+      const filter = { email: education.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: education,
+      };
+      const result = await educationCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+    app.get("/education", async (req, res) => {
+      const email = req.query.email;
+
+      const query = { email: email };
+      const result = await educationCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.get("/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await userProfileCollection.findOne({ email: email });
+      const isAdmin = user?.category === "admin";
+      res.send({ admin: isAdmin });
+    });
+    app.get("/employee/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await userProfileCollection.findOne({ email: email });
+      const isEmployee = user?.category === "employee";
+      res.send({ employee: isEmployee });
+    });
+   
   } finally {
   }
 };
