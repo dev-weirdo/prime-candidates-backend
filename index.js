@@ -56,6 +56,15 @@ const run = async () => {
     const educationCollection = client
       .db("PrimeCandidates")
       .collection("education");
+    const adminCollection = client
+      .db("PrimeCandidates")
+      .collection("admin");
+    const employeeCollection = client
+      .db("PrimeCandidates")
+      .collection("employee");
+    const studentCollection = client
+      .db("PrimeCandidates")
+      .collection("student");
 
     const userCollection = client.db("PrimeCandidates").collection("user");
     const applyCollection = client.db("PrimeCandidates").collection("apply");
@@ -295,7 +304,19 @@ const run = async () => {
       const result = await educationCollection.find(query).toArray();
       res.send(result);
     });
-  
+    app.get("/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await userProfileCollection.findOne({ email: email });
+      const isAdmin = user?.category === "admin";
+      res.send({ admin: isAdmin });
+    });
+    app.get("/employee/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await userProfileCollection.findOne({ email: email });
+      const isEmployee = user?.category === "employee";
+      res.send({ employee: isEmployee });
+    });
+   
   } finally {
   }
 };
