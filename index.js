@@ -230,8 +230,8 @@ const run = async () => {
       const email = req.params.email;
       const user = await userProfileCollection.findOne({ email: email });
 
-      res.send(user);
-      console.log(user);
+      res.send({data:user});
+      
     });
 
     app.post("/review", async (req, res) => {
@@ -267,11 +267,11 @@ const run = async () => {
       res.send(result);
     });
     app.get("/experience/:email", async (req, res) => {
-      const email = req.query.email;
+      const email = req.params.email;
+      const experience = await experienceCollection.findOne({ email: email });
 
-      const query = { email: email };
-      const result = await experienceCollection.find(query).toArray();
-      res.send(result);
+      res.send({data:experience});
+      
     });
     app.put("/education/:email", async (req, res) => {
       const education = req.body;
