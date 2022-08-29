@@ -56,9 +56,7 @@ const run = async () => {
     const educationCollection = client
       .db("PrimeCandidates")
       .collection("education");
-    const adminCollection = client
-      .db("PrimeCandidates")
-      .collection("admin");
+    const adminCollection = client.db("PrimeCandidates").collection("admin");
     const employeeCollection = client
       .db("PrimeCandidates")
       .collection("employee");
@@ -228,19 +226,12 @@ const run = async () => {
       res.send(result);
     });
 
-    app.get("/userprofile", async (req, res) => {
-      const email = req.query.email;
+    app.get("/userprofile/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await userProfileCollection.findOne({ email: email });
 
-      const query = { email: email };
-      const result = await userProfileCollection.find(query).toArray();
-      res.send(result);
-    });
-    app.get("/userprofile", async (req, res) => {
-      const email = req.query.email;
-
-      const query = { email: email };
-      const result = await userProfileCollection.find(query).toArray();
-      res.send(result);
+      res.send({data:user});
+      
     });
 
     app.post("/review", async (req, res) => {
@@ -276,11 +267,11 @@ const run = async () => {
       res.send(result);
     });
     app.get("/experience/:email", async (req, res) => {
-      const email = req.query.email;
+      const email = req.params.email;
+      const experience = await experienceCollection.findOne({ email: email });
 
-      const query = { email: email };
-      const result = await experienceCollection.find(query).toArray();
-      res.send(result);
+      res.send({data:experience});
+      
     });
     app.put("/education/:email", async (req, res) => {
       const education = req.body;
@@ -316,7 +307,6 @@ const run = async () => {
       const isEmployee = user?.category === "employee";
       res.send({ employee: isEmployee });
     });
-   
   } finally {
   }
 };
