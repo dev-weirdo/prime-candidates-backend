@@ -56,13 +56,15 @@ const run = async () => {
     const educationCollection = client
       .db("PrimeCandidates")
       .collection("education");
-    const adminCollection = client.db("PrimeCandidates").collection("admin");
-    const employeeCollection = client
+    const resumeNameCollection = client
       .db("PrimeCandidates")
-      .collection("employee");
-    const studentCollection = client
+      .collection("resumeName");
+    const careerCollection = client.db("PrimeCandidates").collection("career");
+    const skillsCollection = client.db("PrimeCandidates").collection("skills");
+    const projectsCollection = client
       .db("PrimeCandidates")
-      .collection("student");
+      .collection("projects");
+    const courseCollection = client.db("PrimeCandidates").collection("course");
 
     const userCollection = client.db("PrimeCandidates").collection("user");
     const applyCollection = client.db("PrimeCandidates").collection("apply");
@@ -230,8 +232,7 @@ const run = async () => {
       const email = req.params.email;
       const user = await userProfileCollection.findOne({ email: email });
 
-      res.send({data:user});
-      
+      res.send({ data: user });
     });
 
     app.post("/review", async (req, res) => {
@@ -270,8 +271,7 @@ const run = async () => {
       const email = req.params.email;
       const experience = await experienceCollection.findOne({ email: email });
 
-      res.send({data:experience});
-      
+      res.send({ data: experience });
     });
     app.put("/education/:email", async (req, res) => {
       const education = req.body;
@@ -307,6 +307,101 @@ const run = async () => {
       const isEmployee = user?.category === "employee";
       res.send({ employee: isEmployee });
     });
+
+    app.put("/career/:email", async (req, res) => {
+      const career = req.body;
+
+      const filter = { email: career.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: career,
+      };
+      const result = await careerCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+    app.get("/career/:email", async (req, res) => {
+      const email = req.params.email;
+      const career = await careerCollection.findOne({ email: email });
+
+      res.send({ data: career });
+    });
+    // app.put("/skills/:email", async (req, res) => {
+    //   const skills = req.body;
+
+    //   const filter = { email: skills.email };
+    //   const options = { upsert: true };
+    //   const updateDoc = {
+    //     $set: skills,
+    //   };
+    //   const result = await skillsCollection.updateOne(
+    //     filter,
+    //     updateDoc,
+    //     options
+    //   );
+    //   res.send(result);
+    // })
+    app.put("/projects/:email", async (req, res) => {
+      const projects = req.body;
+
+      const filter = { email: projects.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: projects,
+      };
+      const result = await projectsCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+    // app.post("/projects", async (req, res) => {
+    //   const projects = req.body;
+    //   const result = await projectsCollection.insertOne(projects);
+    //   res.send(result);
+    // });
+    app.delete("/projects/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await projectsCollection.deleteOne(query);
+      res.send(result);
+    });
+    app.get("/projects/:email", async (req, res) => {
+      const email = req.params.email;
+      const projects = await projectsCollection.findOne({ email: email });
+      res.send({ data: projects });
+    });
+    app.put("/course/:email", async (req, res) => {
+      const course = req.body;
+
+      const filter = { email: course.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: course,
+      };
+      const result = await courseCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    })
+    app.get("/course/:email", async (req, res) => {
+      const email = req.params.email;
+      const course = await courseCollection.findOne({ email: email });
+
+      res.send({ data: course });
+    })
+    app.delete("/course/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await courseCollection.deleteOne(query);
+      res.send(result);
+    })
   } finally {
   }
 };
